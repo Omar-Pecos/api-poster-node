@@ -11,7 +11,8 @@ exports.signup = (req, res) => {
     fullname : req.body.fullname,
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    active : 1
   });
 
   user.save((err, user) => {
@@ -89,15 +90,31 @@ exports.signin = (req, res) => {
           message: "Invalid Password!"
         });
       }
+      
+      //check active!
+      if (!user.active){
+        return res.status(403).send({
+          accessToken: 'blocked',
+          message: "User blocked to login"
+        });
+      }
 
       var token = jwt.sign({ id: user.id }, config.secret, {
         expiresIn: 86400 // 24 hours
       });
 
-      var authorities = [];
+      /*var authorities = [];
 
       for (let i = 0; i < user.roles.length; i++) {
         authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
+      }*/
+
+      var rol = 0;
+
+      for (let i = 0 ; i < user.roles.length ; i++){
+          if (user.roles[i].name === 'admin'){
+              rol = 1;
+          }
       }
 
       res.status(200).send({

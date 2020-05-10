@@ -15,9 +15,25 @@ verifyToken = (req, res, next) => {
       if (err) {
         return res.status(401).send({ message: "Unauthorized!" });
       }
-      // si va bien coje el id del user y sigue a la siguiente peticion isAdmin
-      req.userId = decoded.id;
-      next();
+
+       //if blocked que retorne error también y no le deje hacer ninguna operacion!
+      User.findById(decoded.id,(err,user) =>{
+          if(err){
+            req.userId = decoded.id;
+            next();
+          }
+          if (user.active === false){
+            return res.status(403).send({
+              accessToken: 'blocked',
+              message: "User blocked to do operations"
+            });
+          }else{
+            // si va bien coje el id del user y sigue a la siguiente peticion
+            req.userId = decoded.id;
+            next();
+          }
+      });
+    
     });
   };
   

@@ -10,6 +10,7 @@ module.exports = function(app) {
     next();
   });
 
+  //test
   app.get("/api/test/all", controller.allAccess);
 
   app.get("/api/test/user", [authJwt.verifyToken], controller.userBoard);
@@ -19,4 +20,14 @@ module.exports = function(app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminBoard
   );
+
+  /* Usuarios */
+
+  app.get('/api/users',[authJwt.verifyToken, authJwt.isAdmin],controller.getUsers);
+  app.get('/api/users/grant/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.grantPrivileges);
+  app.get('/api/users/revoke/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.revokePrivileges);
+  app.get('/api/users/block/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.blockUser);
+  app.delete('/api/users/delete/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.deleteUser);
+  app.post('/api/users/setprogress',[authJwt.verifyToken] , controller.setProgress);
+  app.post('/api/users/unsetprogress',[authJwt.verifyToken] , controller.unsetProgress);
 };

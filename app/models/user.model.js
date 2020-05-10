@@ -5,12 +5,15 @@ const userSchema = new mongoose.Schema({
     username : String,
     email : String,
     password : String,
+    active : Boolean,
     roles: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Role"
       }
-    ]
+    ],
+    favorites : [String],
+    progress : Array
 });
 
 const User = mongoose.model('User',userSchema);
