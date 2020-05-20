@@ -6,9 +6,13 @@ const cors = require('cors');
 /* Create express App */
 const app = express();
 
+/* dotenv */
+require('dotenv').config();
+
 /* Cors */
 var corsOptions = {
-  origin: "http://localhost:8081"
+ // origin: 'http://localhost:4200'
+ origin: 'https://omarpecos.com'
 };
 
 app.use(cors(corsOptions));
@@ -22,14 +26,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 /* Mongoose !!! */
 const db = require('./app/models');
-const dbConfig = require('./app/config/db.config');
+    //const dbConfig = require('./app/config/db.config');
+
 //Para initial()
 const Role = db.role;
 const User = db.user;
 const bcrypt = require('bcryptjs');
 
 db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+  //.connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+    .connect( process.env.MONGO_URI ,{
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -85,7 +91,7 @@ function initialUsers() {
         username: "user",
         email: "user@user.com",
         roles: ["5eb7e3869b99552b1c54d4e6"],
-        password: bcrypt.hashSync("user", 8),
+        password: bcrypt.hashSync( process.env.PASS_USER , 8),
         active: 1
       }).save(err => {
         if (err) {
@@ -100,7 +106,7 @@ function initialUsers() {
         username: "admin",
         email: "admin@admin.com",
         roles: ["5eb7e3869b99552b1c54d4e7"],
-        password: bcrypt.hashSync("admin", 8),
+        password: bcrypt.hashSync( process.env.PASS_ADMIN, 8),
         active: 1
       }).save(err => {
         if (err) {

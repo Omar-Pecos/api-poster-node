@@ -24,6 +24,8 @@ module.exports = function(app) {
   /* Usuarios */
 
   app.get('/api/users',[authJwt.verifyToken, authJwt.isAdmin],controller.getUsers);
+  app.get('/api/user/:id',[authJwt.verifyToken],controller.getUser);
+  app.put('/api/users/edit/:id', [authJwt.verifyToken], controller.editUser);
   app.get('/api/users/grant/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.grantPrivileges);
   app.get('/api/users/revoke/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.revokePrivileges);
   app.get('/api/users/block/:id',[authJwt.verifyToken, authJwt.isAdmin], controller.blockUser);

@@ -1,3 +1,4 @@
+const MongoPaging = require('mongo-cursor-pagination');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -15,6 +16,9 @@ const userSchema = new mongoose.Schema({
     favorites : [String],
     progress : Array
 });
+
+//plugin for pagination
+userSchema.plugin(MongoPaging.mongoosePlugin);
 
 const User = mongoose.model('User',userSchema);
 

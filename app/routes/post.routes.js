@@ -11,7 +11,8 @@ module.exports = function(app) {
     });
 
     //Categories
-    app.get('/api/category/:theme?', [authJwt.verifyToken], controller.getCategories);
+    app.get('/api/category/:theme?', controller.getCategories);
+   // app.get('/api/cat/:name', controller.getCategory);
     app.post('/api/category/create', [authJwt.verifyToken, authJwt.isAdmin] , controller.createCategory);
     app.put('/api/category/edit/:id', [authJwt.verifyToken, authJwt.isAdmin] , controller.editCategory);
     app.delete('/api/category/delete/:id', [authJwt.verifyToken, authJwt.isAdmin] , controller.deleteCategory);
@@ -20,11 +21,12 @@ module.exports = function(app) {
     app.post('/api/posts/create', [authJwt.verifyToken],controller.createPost);
     app.put('/api/posts/edit/:id', [authJwt.verifyToken],controller.editPost);
     app.delete('/api/posts/delete/:id', [authJwt.verifyToken] , controller.deletePost);
-    app.get('/api/posts/:last?', [authJwt.verifyToken],controller.getPosts);
-    app.get('/api/post/:id', [authJwt.verifyToken],controller.getPost);
+    app.get('/api/posts/:last?',controller.getPosts);
+    app.get('/api/post/:id',controller.getPost);
     app.post('/api/post/favorite', [authJwt.verifyToken], controller.markAsFavorite);
     app.post('/api/post/unfavorite', [authJwt.verifyToken], controller.unmarkAsFavorite);
-    app.get('/api/searchposts/:search?', [authJwt.verifyToken],controller.searchPosts);
-    app.get('/api/filterposts', [authJwt.verifyToken],controller.getPostsFiltered);
+    app.get('/api/searchposts/:search?',controller.searchPosts);
+    app.get('/api/filterposts', controller.getPostsFiltered);
+    app.post('/api/posts/collection',controller.getPostCollection);
 
 }
