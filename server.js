@@ -12,7 +12,7 @@ require('dotenv').config();
 /* Cors */
 var corsOptions = {
  // origin: 'http://localhost:4200'
- origin: 'https://omarpecos.com'
+  origin: 'https://omarpecos.com'
 };
 
 app.use(cors(corsOptions));
@@ -122,7 +122,7 @@ function initialUsers() {
 
 /* Test route */
 app.get('/', (req, res) => {
-  res.json({ message: "Hello world!!" + new Date().toUTCString() });
+  res.json({ message: "Hello world desde mi API!!" + new Date().toUTCString() });
 });
 
 /* Routes */

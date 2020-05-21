@@ -137,13 +137,27 @@ const bcrypt = require('bcryptjs');
     });
   }
 
-  exports.grantPrivileges = (req,res) =>{
+  exports.grantPrivileges = async (req,res) =>{
 
     var userId = req.params.id;
 
     var adminRolId;
 
-    Role.findOne({name : 'admin'} , (err,rol) =>{
+    //buscar el rol
+    const rol = await Role.findOne({name : 'admin'});
+    adminRolId = rol._id;
+
+    //editar el user
+    const user = await User.findOne({_id : userId});
+    user.roles = [adminRolId];
+    await user.save();
+
+    return res.status(200).send({
+      status : 'success',
+      user 
+    });
+    
+    /*Role.findOne({name : 'admin'} , (err,rol) =>{
         if (err){
             return res.status(500).send({
               status : 'error',
@@ -152,9 +166,9 @@ const bcrypt = require('bcryptjs');
         }
 
         adminRolId = rol._id;
-    });
+    });*/
 
-    User.findOne({_id : userId})
+    /*User.findOne({_id : userId})
       .exec((err, user) =>{
         if (err){
           return res.status(500).send({
@@ -178,16 +192,30 @@ const bcrypt = require('bcryptjs');
             user 
           });
         });
-    })
+    })*/
 
   }
-  exports.revokePrivileges = (req,res) =>{
+  exports.revokePrivileges = async (req,res) =>{
 
     var userId = req.params.id;
 
     var userRolId;
 
-    Role.findOne({name : 'user'} , (err,rol) =>{
+    //get rol
+    const rol = await Role.findOne({name : 'user'});
+    userRolId = rol._id;
+
+    //update User
+    const user = await User.findOne({_id : userId});
+    user.roles = [userRolId];
+    await user.save();
+
+    return res.status(200).send({
+      status : 'success',
+      user 
+    });
+
+   /* Role.findOne({name : 'user'} , (err,rol) =>{
         if (err){
             return res.status(500).send({
               status : 'error',
@@ -196,9 +224,9 @@ const bcrypt = require('bcryptjs');
         }
 
         userRolId = rol._id;
-    });
+    });*/
 
-    User.findOne({_id : userId})
+   /* User.findOne({_id : userId})
       .exec((err, user) =>{
             if (err){
               return res.status(500).send({
@@ -222,7 +250,7 @@ const bcrypt = require('bcryptjs');
             user 
           });
         });
-    });
+    });*/
 
   }
 

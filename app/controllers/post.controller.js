@@ -404,7 +404,7 @@ exports.getPostCollection = (req, res) => {
         });
 }
 
-exports.markAsFavorite = (req, res) => {
+exports.markAsFavorite = async (req, res) => {
     var params = req.body;
 
     var userId = req.userId;
@@ -412,7 +412,41 @@ exports.markAsFavorite = (req, res) => {
 
     var username = '';
 
-    User.findById(userId, (err, user) => {
+    // Cojer Usuario y rellenar username
+    const user = await User.findById(userId);
+   
+    username = user.username;
+    var colFavs = [];
+
+    if (user.favorites.length > 0) {
+        colFavs = user.favorites;
+    }
+    colFavs.push(postId);
+
+    user.favorites = colFavs;
+    await user.save();
+
+       
+    // Cojer el post y rellenar favorites
+      const post = await Post.findById(postId);
+
+      var favoriteObj = {};
+      if (Object.keys(post.favorites).length > 0) {
+          favoriteObj = post.favorites;
+      }
+      favoriteObj[username] = true;
+
+      post.favorites = favoriteObj;
+      post.markModified('favorites');
+
+     await post.save();
+
+      return res.status(200).send({
+          status: 'success',
+          post
+      });
+
+  /*  User.findById(userId, (err, user) => {
         if (err) {
             return res.status(500).send({
                 status: 'error',
@@ -430,9 +464,9 @@ exports.markAsFavorite = (req, res) => {
 
         user.favorites = colFavs;
         user.save();
-    })
+    })*/
 
-    Post.findById(postId, (err, post) => {
+   /* Post.findById(postId, (err, post) => {
         if (err) {
             return res.status(500).send({
                 status: 'error',
@@ -455,10 +489,10 @@ exports.markAsFavorite = (req, res) => {
             status: 'success',
             post
         });
-    })
+    })*/
 }
 
-exports.unmarkAsFavorite = (req, res) => {
+exports.unmarkAsFavorite = async (req, res) => {
     var params = req.body;
 
     var userId = req.userId;
@@ -466,7 +500,43 @@ exports.unmarkAsFavorite = (req, res) => {
 
     var username = '';
 
-    User.findById(userId, (err, user) => {
+    // cojer User y eliminar el favorito
+    const user = await User.findById(userId);
+    username = user.username;
+    var colFavs;
+
+    if (user.favorites.length > 0) {
+        colFavs = user.favorites;
+    }
+
+    const helpArray = colFavs.filter(fav => fav !== postId);
+
+    user.favorites = helpArray;
+    await user.save();
+    
+    //cojer el post y eliminar esa key de este user
+
+    const post = await Post.findById(postId);
+
+    var favoriteObj;
+    if (Object.keys(post.favorites).length > 0) {
+        favoriteObj = post.favorites;
+    }
+
+    //delete esa propiedad
+    delete favoriteObj[username];
+
+    post.favorites = favoriteObj;
+
+    post.markModified('favorites');
+    await post.save();
+
+    return res.status(200).send({
+        status: 'success',
+        post
+    });
+
+   /* User.findById(userId, (err, user) => {
         if (err) {
             return res.status(500).send({
                 status: 'error',
@@ -485,9 +555,9 @@ exports.unmarkAsFavorite = (req, res) => {
 
         user.favorites = helpArray;
         user.save();
-    })
+    })*/
 
-    Post.findById(postId, (err, post) => {
+   /* Post.findById(postId, (err, post) => {
         if (err) {
             return res.status(500).send({
                 status: 'error',
@@ -512,7 +582,7 @@ exports.unmarkAsFavorite = (req, res) => {
             status: 'success',
             post
         });
-    })
+    })*/
 }
 
 exports.searchPosts = (req, res) => {
